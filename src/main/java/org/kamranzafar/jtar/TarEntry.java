@@ -87,7 +87,7 @@ public class TarEntry {
     }
 
     public void setName(String name) {
-        header.name = new StringBuffer(name);
+        header.name = new StringBuilder(name);
     }
 
     public int getUserId() {
@@ -111,7 +111,7 @@ public class TarEntry {
     }
 
     public void setUserName(String userName) {
-        header.userName = new StringBuffer(userName);
+        header.userName = new StringBuilder(userName);
     }
 
     public String getGroupName() {
@@ -119,7 +119,7 @@ public class TarEntry {
     }
 
     public void setGroupName(String groupName) {
-        header.groupName = new StringBuffer(groupName);
+        header.groupName = new StringBuilder(groupName);
     }
 
     public void setIds(int userId, int groupId) {
@@ -173,7 +173,7 @@ public class TarEntry {
      * Extract header from File
      */
     public void extractTarHeader(String entryName) {
-        int permissions = PermissionUtils.permissions(file);
+        int permissions = file.isDirectory() ? 0755 : 0644;  // Default umask
         header = TarHeader.createHeader(entryName, file.length(), file.lastModified() / 1000, file.isDirectory(), permissions);
     }
 
