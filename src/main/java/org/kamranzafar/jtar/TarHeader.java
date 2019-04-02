@@ -53,12 +53,11 @@ import java.io.File;
  * 
  * 
  * 
- * Ustar header
+ * GNU Ustar header
  * 
  * <pre>
  * Offset  Size    Field
- * 257     6       UStar indicator "ustar"
- * 263     2       UStar version "00"
+ * 257     8       UStar indicator "ustar  "
  * 265     32      Owner user name
  * 297     32      Owner group name
  * 329     8       Device major number
@@ -97,7 +96,7 @@ public class TarHeader {
      * Ustar header
      */
 
-    public static final String USTAR_MAGIC = "ustar"; // POSIX
+    public static final String USTAR_MAGIC = "ustar  ";
 
     public static final int USTAR_MAGICLEN = 8;
     public static final int USTAR_USER_NAMELEN = 32;
@@ -113,9 +112,9 @@ public class TarHeader {
     public long size;
     public long modTime;
     public int checkSum;
-    public byte linkFlag;
+    public byte typeflag;
     public StringBuilder linkName;
-    public StringBuilder magic; // ustar indicator and version
+    public StringBuilder magic;
     public StringBuilder userName;
     public StringBuilder groupName;
     public int devMajor;
@@ -146,7 +145,7 @@ public class TarHeader {
      *            The number of header bytes to parse.
      * @return The header's entry name.
      */
-    public static StringBuilder parseName(byte[] header, int offset, int length) {
+    public static StringBuilder parseString(byte[] header, int offset, int length) {
         StringBuilder result = new StringBuilder(length);
 
         int end = offset + length;
@@ -160,21 +159,21 @@ public class TarHeader {
     }
 
     /**
-     * Determine the number of bytes in an entry name.
+     * Write string as bytes into buffer.
      *
-     * @param name
-     *            The header buffer from which to parse.
+     * @param entry
+     *            The string buffer from which to parse.
      * @param offset
      *            The offset into the buffer from which to parse.
      * @param length
      *            The number of header bytes to parse.
-     * @return The number of bytes in a header's entry name.
+     * @return The new offset after writing the entry.
      */
-    public static int getNameBytes(StringBuilder name, byte[] buf, int offset, int length) {
+    public static int getStringBytes(StringBuilder entry, byte[] buf, int offset, int length) {
         int i;
 
-        for (i = 0; i < length && i < name.length(); ++i) {
-            buf[offset + i] = (byte) name.charAt(i);
+        for (i = 0; i < length && i < entry.length(); ++i) {
+            buf[offset + i] = (byte) entry.charAt(i);
         }
 
         for (; i < length; ++i) {
@@ -212,13 +211,13 @@ public class TarHeader {
             header.name = new StringBuilder(name);
         }
         if (dir) {
-            header.linkFlag = TarHeader.LF_DIR;
+            header.typeflag = TarHeader.LF_DIR;
             if (header.name.charAt(header.name.length() - 1) != '/') {
                 header.name.append("/");
             }
             header.size = 0;
         } else {
-            header.linkFlag = TarHeader.LF_NORMAL;
+            header.typeflag = TarHeader.LF_NORMAL;
             header.size = size;
         }
 

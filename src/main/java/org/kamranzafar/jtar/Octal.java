@@ -80,21 +80,10 @@ public class Octal {
 
         buf[offset + idx] = 0;
         --idx;
-        buf[offset + idx] = (byte) ' ';
-        --idx;
 
-        if (value == 0) {
-            buf[offset + idx] = (byte) '0';
-            --idx;
-        } else {
-            for (long val = value; idx >= 0 && val > 0; --idx) {
-                buf[offset + idx] = (byte) ( (byte) '0' + (byte) ( val & 7 ) );
-                val = val >> 3;
-            }
-        }
-
-        for (; idx >= 0; --idx) {
-            buf[offset + idx] = (byte) '0';
+        for (long val = value; idx >= 0; --idx) {
+            buf[offset + idx] = (byte) ((byte) '0' + (byte) (val & 7));
+            val = val >> 3;
         }
 
         return offset + length;
@@ -114,30 +103,8 @@ public class Octal {
      * @return The integer value of the entry's checksum.
      */
     public static int getCheckSumOctalBytes(long value, byte[] buf, int offset, int length) {
-        getOctalBytes( value, buf, offset, length );
+        getOctalBytes(value, buf, offset, length - 1);
         buf[offset + length - 1] = (byte) ' ';
-        buf[offset + length - 2] = 0;
-        return offset + length;
-    }
-
-    /**
-     * Write an octal long integer to a header buffer.
-     * 
-     * @param value
-     *            The value to write.
-     * @param buf
-     *            The header buffer from which to parse.
-     * @param offset
-     *            The offset into the buffer from which to parse.
-     * @param length
-     *            The number of header bytes to parse.
-     * 
-     * @return The long value of the octal bytes.
-     */
-    public static int getLongOctalBytes(long value, byte[] buf, int offset, int length) {
-        byte[] temp = new byte[length + 1];
-        getOctalBytes( value, temp, 0, length + 1 );
-        System.arraycopy( temp, 0, buf, offset, length );
         return offset + length;
     }
 
