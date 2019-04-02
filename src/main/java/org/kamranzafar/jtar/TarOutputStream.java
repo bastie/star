@@ -17,20 +17,14 @@
 
 package org.kamranzafar.jtar;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * @author Kamran Zafar
  * 
  */
 public class TarOutputStream extends OutputStream {
-	private final OutputStream out;
+    private final OutputStream out;
     private long bytesWritten;
     private long currentFileSize;
     private TarEntry currentEntry;
@@ -41,24 +35,24 @@ public class TarOutputStream extends OutputStream {
         currentFileSize = 0;
     }
 
-	public TarOutputStream(final File fout) throws FileNotFoundException {
-		this.out = new BufferedOutputStream(new FileOutputStream(fout));
-		bytesWritten = 0;
-		currentFileSize = 0;
-	}
+    public TarOutputStream(final File fout) throws FileNotFoundException {
+        this.out = new BufferedOutputStream(new FileOutputStream(fout));
+        bytesWritten = 0;
+        currentFileSize = 0;
+    }
 
-	/**
-	 * Opens a file for writing. 
-	 */
-	public TarOutputStream(final File fout, final boolean append) throws IOException {
-		@SuppressWarnings("resource")
-		RandomAccessFile raf = new RandomAccessFile(fout, "rw");
-		final long fileSize = fout.length();
-		if (append && fileSize > TarConstants.EOF_BLOCK) {
-			raf.seek(fileSize - TarConstants.EOF_BLOCK);
-		}
-		out = new BufferedOutputStream(new FileOutputStream(raf.getFD()));
-	}
+    /**
+     * Opens a file for writing.
+     */
+    public TarOutputStream(final File fout, final boolean append) throws IOException {
+        @SuppressWarnings("resource")
+        RandomAccessFile raf = new RandomAccessFile(fout, "rw");
+        final long fileSize = fout.length();
+        if (append && fileSize > TarConstants.EOF_BLOCK) {
+            raf.seek(fileSize - TarConstants.EOF_BLOCK);
+        }
+        out = new BufferedOutputStream(new FileOutputStream(raf.getFD()));
+    }
 
     /**
      * Appends the EOF record and closes the stream
