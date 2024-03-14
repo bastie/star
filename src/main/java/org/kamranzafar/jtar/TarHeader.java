@@ -93,7 +93,7 @@ public class TarHeader {
     public static final byte LF_CONTIG = (byte) '7';
 
     /*
-     * Ustar header
+     * GNU header
      */
 
     public static final String USTAR_MAGIC = "ustar  ";

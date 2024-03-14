@@ -17,15 +17,21 @@
 
 package org.kamranzafar.jtar;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /**
- * @author Kamran Zafar
+ * @author Kamran Zafar, John Wu
  * 
  */
 public class Octal {
 
+    // 8 ^ 11 - 1
+    private static final long OCTAL_MAX = 8589934591L;
+    private static final byte LARGE_NUM_MASK = (byte) 0x80;
+
     /**
-     * Parse an octal string from a header buffer. This is used for the file
-     * permission mode value.
+     * Parse an octal string from a header buffer.
      * 
      * @param header
      *            The header buffer from which to parse.
@@ -42,20 +48,27 @@ public class Octal {
 
         int end = offset + length;
         for (int i = offset; i < end; ++i) {
-            if (header[i] == 0)
+            byte b = header[i];
+
+            if ((b & LARGE_NUM_MASK) != 0 && length == 12) {
+                // Read the lower 8 bytes as big-endian long value
+                return ByteBuffer.wrap(header, offset + 4, 8).order(ByteOrder.BIG_ENDIAN).getLong();
+            }
+
+            if (b == 0)
                 break;
 
-            if (header[i] == (byte) ' ' || header[i] == '0') {
+            if (b == (byte) ' ' || b == '0') {
                 if (stillPadding)
                     continue;
 
-                if (header[i] == (byte) ' ')
+                if (b == (byte) ' ')
                     break;
             }
 
             stillPadding = false;
 
-            result = ( result << 3 ) + ( header[i] - '0' );
+            result = ( result << 3 ) + ( b - '0' );
         }
 
         return result;
@@ -73,9 +86,18 @@ public class Octal {
      * @param length
      *            The number of header bytes to parse.
      * 
-     * @return The integer value of the octal bytes.
+     * @return The new offset.
      */
     public static int getOctalBytes(long value, byte[] buf, int offset, int length) {
+        if (value > OCTAL_MAX && length == 12) {
+            buf[offset] = LARGE_NUM_MASK;
+            buf[offset + 1] = 0;
+            buf[offset + 2] = 0;
+            buf[offset + 3] = 0;
+            ByteBuffer.wrap(buf, offset + 4, 8).order(ByteOrder.BIG_ENDIAN).putLong(value);
+            return offset + length;
+        }
+
         int idx = length - 1;
 
         buf[offset + idx] = 0;
@@ -100,7 +122,7 @@ public class Octal {
      *            The offset into the buffer from which to parse.
      * @param length
      *            The number of header bytes to parse.
-     * @return The integer value of the entry's checksum.
+     * @return The new offset.
      */
     public static int getCheckSumOctalBytes(long value, byte[] buf, int offset, int length) {
         getOctalBytes(value, buf, offset, length - 1);
