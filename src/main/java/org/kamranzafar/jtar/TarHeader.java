@@ -18,6 +18,8 @@
 package org.kamranzafar.jtar;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Header
@@ -146,16 +148,19 @@ public class TarHeader {
      * @return The header's entry name.
      */
     public static StringBuilder parseString(byte[] header, int offset, int length) {
-        StringBuilder result = new StringBuilder(length);
+        int count = 0;
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 
         int end = offset + length;
         for (int i = offset; i < end; ++i) {
             if (header[i] == 0)
                 break;
-            result.append((char) header[i]);
+            count++;
+            byteBuffer.put(header[i]);
         }
 
-        return result;
+        return new StringBuilder(new String(byteBuffer.array(), 0, count, StandardCharsets.UTF_8));
     }
 
     /**
@@ -170,10 +175,11 @@ public class TarHeader {
      * @return The new offset after writing the entry.
      */
     public static int getStringBytes(StringBuilder entry, byte[] buf, int offset, int length) {
+        byte[] bytes = StandardCharsets.UTF_8.encode(entry.toString()).array();
         int i;
 
-        for (i = 0; i < length && i < entry.length(); ++i) {
-            buf[offset + i] = (byte) entry.charAt(i);
+        for (i = 0; i < length && i < bytes.length; ++i) {
+            buf[offset + i] = bytes[i];
         }
 
         for (; i < length; ++i) {

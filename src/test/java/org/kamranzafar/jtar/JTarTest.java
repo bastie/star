@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
@@ -65,6 +66,7 @@ public class JTarTest {
 		TestUtils.writeStringToFile("CNBDGjEJNYfms7rwxfkAJ", new File(tartest, "four"));
 		TestUtils.writeStringToFile("tT6mFKuLRjPmUDjcVTnjBL", new File(tartest, "five"));
 		TestUtils.writeStringToFile("jrPYpzLfWB5vZTRsSKqFvVj", new File(tartest, "six"));
+		TestUtils.writeStringToFile("中文测试", new File(tartest, "中文.txt"));
 
 		tarFolder(null, dir.getAbsolutePath() + "/tartest/", out);
 
@@ -155,7 +157,7 @@ public class JTarTest {
 		rif.seek(TarConstants.HEADER_BLOCK * 3 + TarConstants.DATA_BLOCK * 2);
 		byte[] data = new byte[(int)entry.getSize()];
 		rif.read(data);
-		assertEquals("gTzyuQjfhrnyX9cTBSy", new String(data, "UTF-8"));
+		assertEquals("HPeX2kD5kSTc7pzCDX", new String(data, StandardCharsets.UTF_8));
 		rif.close();
 	}
 	
@@ -273,5 +275,6 @@ public class JTarTest {
 		assertEquals("CNBDGjEJNYfms7rwxfkAJ", TestUtils.readFile(new File(destFolder, "tartest/four")));
 		assertEquals("tT6mFKuLRjPmUDjcVTnjBL", TestUtils.readFile(new File(destFolder, "tartest/five")));
 		assertEquals("jrPYpzLfWB5vZTRsSKqFvVj", TestUtils.readFile(new File(destFolder, "tartest/six")));
+		assertEquals("中文测试", TestUtils.readFile(new File(destFolder, "tartest/中文.txt")));
 	}
 }
