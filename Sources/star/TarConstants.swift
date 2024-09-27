@@ -1,7 +1,5 @@
 /**
- * Copyright 2012 Kamran Zafar 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at 
  * 
@@ -15,14 +13,12 @@
  * 
  */
 
-package org.kamranzafar.jtar;
-
 /**
  * @author Kamran Zafar
  * 
  */
-public class TarConstants {
-    public static final int EOF_BLOCK = 1024;
-    public static final int DATA_BLOCK = 512;
-    public static final int HEADER_BLOCK = 512;
+public struct TarConstants {
+    public static let EOF_BLOCK = 1024;
+    public static let DATA_BLOCK = 512;
+    public static let HEADER_BLOCK = 512;
 }
