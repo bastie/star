@@ -86,7 +86,7 @@ open class TarOutputStream : java.io.OutputStream {
   open override func write(_ b : [UInt8], _ off : Int, _ len : Int) throws {
     if (currentEntry != nil && !(currentEntry!.isDirectory())) {
       if (currentEntry!.getSize() < currentFileSize + Int64(len)) {
-        throw java.io.Throwable.IOException( "The current entry[\(currentEntry!.getName())] size[\(currentEntry!.getSize())] is smaller than the bytes[\(( currentFileSize + Int64(len) ))] being written." );
+        throw java.io.IOException( "The current entry[\(currentEntry!.getName())] size[\(currentEntry!.getSize())] is smaller than the bytes[\(( currentFileSize + Int64(len) ))] being written." );
       }
     }
     
@@ -122,7 +122,7 @@ open class TarOutputStream : java.io.OutputStream {
   open func closeCurrentEntry() throws  {
     if let currentEntry = self.currentEntry {
       if (currentEntry.getSize() > currentFileSize) {
-        throw java.io.Throwable.IOException( "The current entry[\(currentEntry.getName())] of size[\(currentEntry.getSize())] has not been fully written." )
+        throw java.io.IOException( "The current entry[\(currentEntry.getName())] of size[\(currentEntry.getSize())] has not been fully written." )
       }
       
       self.currentEntry = nil;

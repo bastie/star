@@ -149,7 +149,7 @@ public class TarHeader {
     
     let end = offset + length;
     for i in offset..<end {
-      if (header[i] == 0) {
+      if (header[i] == UInt8(0)) {
         break;
       }
       count += 1

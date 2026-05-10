@@ -63,7 +63,7 @@ open class Octal {
         
       }
       
-      if (b == 0) {
+      if (b == UInt8(0)) {
         break;
       }
       

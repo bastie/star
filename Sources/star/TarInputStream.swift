@@ -51,7 +51,7 @@ open class TarInputStream : java.io.FilterInputStream {
    *
    */
   open func reset() throws  {
-    throw java.io.Throwable.IOException("mark/reset not supported");
+    throw java.io.IOException("mark/reset not supported");
   }
   
   /**
@@ -165,7 +165,7 @@ open class TarInputStream : java.io.FilterInputStream {
           
           if (res == 0 && currentEntry!.getSize() - currentFileSize > 0) {
             // I suspect file corruption
-            throw java.io.Throwable.IOException("Possible tar file corruption");
+            throw java.io.IOException("Possible tar file corruption");
           }
           
           bs += res;
